@@ -13,7 +13,7 @@ import { propTypes } from '../../../util/types';
 
 // Import modules from this directory
 import EditListingAvailabilityPanel from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
-import EditListingCategoryPanel from './EditListingCategoryPanel/EditListingDetailsPanel';
+import EditListingCategoryPanel from './EditListingCategoryPanel/EditListingCategoryPanel';
 import EditListingDetailsPanel from './EditListingDetailsPanel/EditListingDetailsPanel';
 import EditListingDeliveryPanel from './EditListingDeliveryPanel/EditListingDeliveryPanel';
 import EditListingLocationPanel from './EditListingLocationPanel/EditListingLocationPanel';

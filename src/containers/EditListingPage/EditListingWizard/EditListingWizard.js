@@ -78,7 +78,7 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, processName) => {
   let submitButtonKey = null;
   if (tab === CATEGORY) {
     labelKey = 'EditListingWizard.tabLabelCategory';
-    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDetails`;
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveCategory`;
   } else if (tab === DETAILS) {
     labelKey = 'EditListingWizard.tabLabelDetails';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDetails`;
@@ -180,6 +180,7 @@ const tabCompleted = (tab, listing, config) => {
   const { listingType, transactionProcessAlias, unitType, shippingEnabled, pickupEnabled } =
     publicData || {};
   const deliveryOptionPicked = publicData && (shippingEnabled || pickupEnabled);
+  const category = publicData?.category;
 
   switch (tab) {
     case CATEGORY:
@@ -199,7 +200,7 @@ const tabCompleted = (tab, listing, config) => {
         hasValidListingFieldsInExtendedData(publicData, privateData, config)
       );
     case PRICING:
-      return !!price;
+      return price || publicData;
     case PRICING_AND_STOCK:
       return !!price;
     case DELIVERY:
@@ -207,7 +208,7 @@ const tabCompleted = (tab, listing, config) => {
     case LOCATION:
       return !!(geolocation && publicData?.location?.address);
     case AVAILABILITY:
-      return !!availabilityPlan;
+      return availabilityPlan || publicData;
     case PHOTOS:
       return images && images.length > 0;
     default:

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import EditListingDetailsForm from './EditListingDetailsForm';
+import EditListingCategoryForm from './EditListingCategoryForm';
 import defaultConfig from '../../../../config/configDefault';
 
 const selectableListingTypes = [
@@ -11,11 +11,11 @@ const selectableListingTypes = [
 ];
 
 export const WithInitialValues = {
-  component: EditListingDetailsForm,
+  component: EditListingCategoryForm,
   props: {
     formId: 'WithInitialValues',
     onSubmit: values => {
-      console.log('Submit EditListingDetailsForm with (unformatted) values:', values);
+      console.log('Submit EditListingCategoryForm with (unformatted) values:', values);
     },
     saveActionMsg: 'Save description',
     disabled: false,
@@ -49,11 +49,11 @@ const selectableListingTypes2 = [
 ];
 
 export const MultipleProcessInfos = {
-  component: EditListingDetailsForm,
+  component: EditListingCategoryForm,
   props: {
     formId: 'MultipleProcessInfos',
     onSubmit: values => {
-      console.log('Submit EditListingDetailsForm with (unformatted) values:', values);
+      console.log('Submit EditListingCategoryForm with (unformatted) values:', values);
     },
     saveActionMsg: 'Save description',
     disabled: false,

@@ -129,6 +129,8 @@ export const EditListingPageComponent = props => {
   const hasStripeOnboardingDataIfNeeded = returnURLType ? !!(currentUser && currentUser.id) : true;
   const showForm = hasStripeOnboardingDataIfNeeded && (isNewURI || currentListing.id);
 
+  console.log('currentListing.attributes', currentListing.attributes);
+
   if (shouldRedirect) {
     const isPendingApproval =
       currentListing && currentListingState === LISTING_STATE_PENDING_APPROVAL;

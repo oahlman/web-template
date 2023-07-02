@@ -14,7 +14,7 @@ import { maxLength, required, composeValidators } from '../../../../util/validat
 import { Form, Button, FieldSelect, FieldTextInput, Heading } from '../../../../components';
 // Import modules from this directory
 import CustomExtendedDataField from '../CustomExtendedDataField';
-import css from './EditListingDetailsForm.module.css';
+import css from './EditListingCategoryForm.module.css';
 
 const TITLE_MAX_LENGTH = 60;
 
@@ -23,11 +23,11 @@ const ErrorMessage = props => {
   const { fetchErrors } = props;
   const { updateListingError, createListingDraftError, showListingsError } = fetchErrors || {};
   const errorMessage = updateListingError ? (
-    <FormattedMessage id="EditListingDetailsForm.updateFailed" />
+    <FormattedMessage id="EditListingCategoryForm.updateFailed" />
   ) : createListingDraftError ? (
-    <FormattedMessage id="EditListingDetailsForm.createListingDraftError" />
+    <FormattedMessage id="EditListingCategoryForm.createListingDraftError" />
   ) : showListingsError ? (
-    <FormattedMessage id="EditListingDetailsForm.showListingFailed" />
+    <FormattedMessage id="EditListingCategoryForm.showListingFailed" />
   ) : null;
 
   if (errorMessage) {
@@ -74,14 +74,14 @@ const FieldSelectListingType = props => {
         id={name}
         name={name}
         className={css.listingTypeSelect}
-        label={intl.formatMessage({ id: 'EditListingDetailsForm.listingTypeLabel' })}
+        label={intl.formatMessage({ id: 'EditListingCategoryForm.listingTypeLabel' })}
         validate={required(
-          intl.formatMessage({ id: 'EditListingDetailsForm.listingTypeRequired' })
+          intl.formatMessage({ id: 'EditListingCategoryForm.listingTypeRequired' })
         )}
         onChange={handleOnChange}
       >
         <option disabled value="">
-          {intl.formatMessage({ id: 'EditListingDetailsForm.listingTypePlaceholder' })}
+          {intl.formatMessage({ id: 'EditListingCategoryForm.listingTypePlaceholder' })}
         </option>
         {listingTypes.map(config => {
           const type = config.listingType;
@@ -98,7 +98,7 @@ const FieldSelectListingType = props => {
   ) : hasMultipleListingTypes && hasExistingListingType ? (
     <div className={css.listingTypeSelect}>
       <Heading as="h5" rootClassName={css.selectedLabel}>
-        {intl.formatMessage({ id: 'EditListingDetailsForm.listingTypeLabel' })}
+        {intl.formatMessage({ id: 'EditListingCategoryForm.listingTypeLabel' })}
       </Heading>
       <p className={css.selectedValue}>{formApi.getFieldState(name)?.value}</p>
       <FieldHidden name={name} />
@@ -133,7 +133,7 @@ const AddListingFields = props => {
             name={key}
             fieldConfig={fieldConfig}
             defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
+              id: 'EditListingCategoryForm.defaultRequiredMessage',
             })}
           />,
         ]
@@ -145,7 +145,7 @@ const AddListingFields = props => {
 
 // Form that asks title, description, transaction process and unit type for pricing
 // In addition, it asks about custom fields according to marketplace-custom-config.js
-const EditListingDetailsFormComponent = props => (
+const EditListingCategoryFormComponent = props => (
   <FinalForm
     {...props}
     mutators={{ ...arrayMutators }}
@@ -175,10 +175,10 @@ const EditListingDetailsFormComponent = props => (
       const { listingType } = values;
 
       const titleRequiredMessage = intl.formatMessage({
-        id: 'EditListingDetailsForm.titleRequired',
+        id: 'EditListingCategoryForm.titleRequired',
       });
       const maxLengthMessage = intl.formatMessage(
-        { id: 'EditListingDetailsForm.maxLength' },
+        { id: 'EditListingCategoryForm.maxLength' },
         {
           maxLength: TITLE_MAX_LENGTH,
         }
@@ -194,16 +194,35 @@ const EditListingDetailsFormComponent = props => (
         <Form className={classes} onSubmit={handleSubmit}>
           <ErrorMessage fetchErrors={fetchErrors} />
 
+          <FieldSelect
+            id={`${formId}category`}
+            name="category"
+            className={css.listingTypeSelect}
+            label={intl.formatMessage({ id: 'EditListingCategoryForm.category' })}
+            validate={required(
+              intl.formatMessage({ id: 'EditListingCategoryForm.categoryRequired' })
+            )}
+            autoFocus={autoFocus}         
+          >
+            <option disabled value="">
+            {intl.formatMessage({ id: 'EditListingCategoryForm.categoryPlaceholder' })}
+          </option>
+            <option value="accommodation">Boende</option>
+            <option value="construction">Bygg</option>
+            <option value="food">Mat</option>
+            <option value="transportation">Transport</option>
+            <option value="other">Övrigt</option>
+          </FieldSelect>
+
           <FieldTextInput
             id={`${formId}title`}
             name="title"
             className={css.title}
             type="text"
-            label={intl.formatMessage({ id: 'EditListingDetailsForm.title' })}
-            placeholder={intl.formatMessage({ id: 'EditListingDetailsForm.titlePlaceholder' })}
+            label={intl.formatMessage({ id: 'EditListingCategoryForm.title' })}
+            placeholder={intl.formatMessage({ id: 'EditListingCategoryForm.titlePlaceholder' })}
             maxLength={TITLE_MAX_LENGTH}
-            validate={composeValidators(required(titleRequiredMessage), maxLength60Message)}
-            autoFocus={autoFocus}
+            value={values?.category}
           />
 
           <FieldTextInput
@@ -211,15 +230,11 @@ const EditListingDetailsFormComponent = props => (
             name="description"
             className={css.description}
             type="textarea"
-            label={intl.formatMessage({ id: 'EditListingDetailsForm.description' })}
+            label={intl.formatMessage({ id: 'EditListingCategoryForm.description' })}
             placeholder={intl.formatMessage({
-              id: 'EditListingDetailsForm.descriptionPlaceholder',
+              id: 'EditListingCategoryForm.descriptionPlaceholder',
             })}
-            validate={required(
-              intl.formatMessage({
-                id: 'EditListingDetailsForm.descriptionRequired',
-              })
-            )}
+            value={values?.category}
           />
 
           <FieldSelectListingType
@@ -246,16 +261,16 @@ const EditListingDetailsFormComponent = props => (
   />
 );
 
-EditListingDetailsFormComponent.defaultProps = {
+EditListingCategoryFormComponent.defaultProps = {
   className: null,
-  formId: 'EditListingDetailsForm',
+  formId: 'EditListingCategoryForm',
   fetchErrors: null,
   onProcessChange: null,
   hasExistingListingType: false,
   listingFieldsConfig: [],
 };
 
-EditListingDetailsFormComponent.propTypes = {
+EditListingCategoryFormComponent.propTypes = {
   className: string,
   formId: string,
   intl: intlShape.isRequired,
@@ -282,4 +297,4 @@ EditListingDetailsFormComponent.propTypes = {
   listingFieldsConfig: propTypes.listingFieldsConfig,
 };
 
-export default compose(injectIntl)(EditListingDetailsFormComponent);
+export default compose(injectIntl)(EditListingCategoryFormComponent);

@@ -4,13 +4,13 @@ import '@testing-library/jest-dom';
 import { fakeIntl } from '../../../../util/testData';
 import { renderWithProviders as render, testingLibrary } from '../../../../util/testHelpers';
 
-import EditListingDetailsForm from './EditListingDetailsForm';
+import EditListingCategoryForm from './EditListingCategoryForm';
 
 const { screen, userEvent } = testingLibrary;
 
 const noop = () => null;
 
-describe('EditListingDetailsForm', () => {
+describe('EditListingCategoryForm', () => {
   test('Check that shipping fees can be given and submit button activates', () => {
     const saveActionMsg = 'Save details';
 
@@ -74,7 +74,7 @@ describe('EditListingDetailsForm', () => {
     ];
 
     render(
-      <EditListingDetailsForm
+      <EditListingCategoryForm
         intl={fakeIntl}
         dispatch={noop}
         onSubmit={v => v}
@@ -91,10 +91,10 @@ describe('EditListingDetailsForm', () => {
     );
 
     // Pickup fields
-    const title = 'EditListingDetailsForm.title';
+    const title = 'EditListingCategoryForm.title';
     expect(screen.getByText(title)).toBeInTheDocument();
 
-    const description = 'EditListingDetailsForm.description';
+    const description = 'EditListingCategoryForm.description';
     expect(screen.getByText(description)).toBeInTheDocument();
 
     // Test that save button is disabled at first

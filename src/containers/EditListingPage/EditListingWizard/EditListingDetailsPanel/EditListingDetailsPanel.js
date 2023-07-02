@@ -12,7 +12,8 @@ import { H3, ListingLink } from '../../../../components';
 
 // Import modules from this directory
 import ErrorMessage from './ErrorMessage';
-import EditListingDetailsForm from './EditListingDetailsForm';
+import EditAccommodationDetailsForm from './EditListingDetailsForm';
+import EditCompanyDetailsForm from './EditCompanyDetailsForm';
 import css from './EditListingDetailsPanel.module.css';
 
 /**
@@ -207,6 +208,7 @@ const EditListingDetailsPanel = props => {
   const canShowEditListingDetailsForm =
     hasListingTypesSet && (!hasExistingListingType || hasValidExistingListingType);
   const isPublished = listing?.id && state !== LISTING_STATE_DRAFT;
+  const listingCategory = listing?.attributes?.publicData?.category;
 
   return (
     <div className={classes}>
@@ -225,7 +227,8 @@ const EditListingDetailsPanel = props => {
       </H3>
 
       {canShowEditListingDetailsForm ? (
-        <EditListingDetailsForm
+        listingCategory !== 'accommodation' ? (
+        <EditCompanyDetailsForm
           className={css.form}
           initialValues={initialValues}
           saveActionMsg={submitButtonText}
@@ -281,6 +284,64 @@ const EditListingDetailsPanel = props => {
           fetchErrors={errors}
           autoFocus
         />
+        ) : (
+          <EditAccommodationDetailsForm
+          className={css.form}
+          initialValues={initialValues}
+          saveActionMsg={submitButtonText}
+          onSubmit={values => {
+            const {
+              title,
+              description,
+              listingType,
+              transactionProcessAlias,
+              unitType,
+              ...rest
+            } = values;
+            // Clear custom fields that are not included for the selected process
+            const clearUnrelatedCustomFields = true;
+
+            // New values for listing attributes
+            const updateValues = {
+              title: title.trim(),
+              description,
+              publicData: {
+                listingType,
+                transactionProcessAlias,
+                unitType,
+                ...pickListingFieldsData(
+                  rest,
+                  'public',
+                  listingType,
+                  listingFieldsConfig,
+                  clearUnrelatedCustomFields
+                ),
+              },
+              privateData: pickListingFieldsData(
+                rest,
+                'private',
+                listingType,
+                listingFieldsConfig,
+                clearUnrelatedCustomFields
+              ),
+              ...setNoAvailabilityForProductListings(transactionProcessAlias),
+            };
+
+            onSubmit(updateValues);
+          }}
+          selectableListingTypes={listingTypes.map(conf => getTransactionInfo([conf], {}, true))}
+          hasExistingListingType={hasExistingListingType}
+          onProcessChange={onProcessChange}
+          listingFieldsConfig={listingFieldsConfig}
+          marketplaceCurrency={config.currency}
+          disabled={disabled}
+          ready={ready}
+          updated={panelUpdated}
+          updateInProgress={updateInProgress}
+          fetchErrors={errors}
+          autoFocus
+        />
+        )
       ) : (
         <ErrorMessage
           marketplaceName={config.marketplaceName}

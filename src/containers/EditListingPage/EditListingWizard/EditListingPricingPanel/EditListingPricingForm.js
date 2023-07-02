@@ -97,7 +97,6 @@ export const EditListingPricingFormComponent = props => (
             )}
             placeholder={intl.formatMessage({ id: 'EditListingPricingForm.priceInputPlaceholder' })}
             currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
-            validate={priceValidators}
           />
 
           <Button

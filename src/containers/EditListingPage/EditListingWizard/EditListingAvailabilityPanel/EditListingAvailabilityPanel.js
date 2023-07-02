@@ -283,7 +283,6 @@ const EditListingAvailabilityPanel = props => {
         <Button
           className={css.goToNextTabButton}
           onClick={onNextTab}
-          disabled={!hasAvailabilityPlan}
         >
           {submitButtonText}
         </Button>

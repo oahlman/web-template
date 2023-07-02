@@ -12,14 +12,14 @@ import { H3, ListingLink } from '../../../../components';
 
 // Import modules from this directory
 import ErrorMessage from './ErrorMessage';
-import EditListingDetailsForm from './EditListingDetailsForm';
-import css from './EditListingDetailsPanel.module.css';
+import EditListingCategoryForm from './EditListingCategoryForm';
+import css from './EditListingCategoryPanel.module.css';
 
 /**
  * Get listing configuration. For existing listings, it is stored to publicData.
  * For new listings, the data needs to be figured out from listingTypes configuration.
  *
- * In the latter case, we select first type in the array. However, EditListingDetailsForm component
+ * In the latter case, we select first type in the array. However, EditListingCategoryForm component
  * gets 'selectableListingTypes' prop, which it uses to provide a way to make selection,
  * if multiple listing types are available.
  *
@@ -152,12 +152,13 @@ const setNoAvailabilityForProductListings = processAlias => {
  */
 const getInitialValues = (props, existingListingType, listingTypes, listingFieldsConfig) => {
   const { description, title, publicData, privateData } = props?.listing?.attributes || {};
-  const { listingType } = publicData;
+  const { listingType, category } = publicData;
 
   // Initial values for the form
   return {
     title,
     description,
+    category,
     // Transaction type info: listingType, transactionProcessAlias, unitType
     ...getTransactionInfo(listingTypes, existingListingType),
     ...pickListingFieldsData(publicData, 'public', listingType, listingFieldsConfig),
@@ -165,7 +166,7 @@ const getInitialValues = (props, existingListingType, listingTypes, listingField
   };
 };
 
-const EditListingDetailsPanel = props => {
+const EditListingCategoryPanel = props => {
   const {
     className,
     rootClassName,
@@ -204,7 +205,7 @@ const EditListingDetailsPanel = props => {
 
   const noListingTypesSet = listingTypes?.length === 0;
   const hasListingTypesSet = listingTypes?.length > 0;
-  const canShowEditListingDetailsForm =
+  const canShowEditListingCategoryForm =
     hasListingTypesSet && (!hasExistingListingType || hasValidExistingListingType);
   const isPublished = listing?.id && state !== LISTING_STATE_DRAFT;
 
@@ -213,19 +214,19 @@ const EditListingDetailsPanel = props => {
       <H3 as="h1">
         {isPublished ? (
           <FormattedMessage
-            id="EditListingDetailsPanel.title"
+            id="EditListingCategoryPanel.title"
             values={{ listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> }}
           />
         ) : (
           <FormattedMessage
-            id="EditListingDetailsPanel.createListingTitle"
+            id="EditListingCategoryPanel.createListingTitle"
             values={{ lineBreak: <br /> }}
           />
         )}
       </H3>
 
-      {canShowEditListingDetailsForm ? (
-        <EditListingDetailsForm
+      {canShowEditListingCategoryForm ? (
+        <EditListingCategoryForm
           className={css.form}
           initialValues={initialValues}
           saveActionMsg={submitButtonText}
@@ -234,6 +235,7 @@ const EditListingDetailsPanel = props => {
               title,
               description,
               listingType,
+              category,
               transactionProcessAlias,
               unitType,
               ...rest
@@ -243,10 +245,11 @@ const EditListingDetailsPanel = props => {
 
             // New values for listing attributes
             const updateValues = {
-              title: title.trim(),
-              description,
+              title: category,
+              description: category,
               publicData: {
                 listingType,
+                category,
                 transactionProcessAlias,
                 unitType,
                 ...pickListingFieldsData(
@@ -292,7 +295,7 @@ const EditListingDetailsPanel = props => {
   );
 };
 
-EditListingDetailsPanel.defaultProps = {
+EditListingCategoryPanel.defaultProps = {
   className: null,
   rootClassName: null,
   onProcessChange: null,
@@ -300,7 +303,7 @@ EditListingDetailsPanel.defaultProps = {
   listing: null,
 };
 
-EditListingDetailsPanel.propTypes = {
+EditListingCategoryPanel.propTypes = {
   className: string,
   rootClassName: string,
 
@@ -317,4 +320,4 @@ EditListingDetailsPanel.propTypes = {
   errors: object.isRequired,
 };
 
-export default EditListingDetailsPanel;
+export default EditListingCategoryPanel;
