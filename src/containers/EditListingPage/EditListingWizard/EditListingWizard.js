@@ -36,6 +36,7 @@ import {
 
 // Import modules from this directory
 import EditListingWizardTab, {
+  CATEGORY,
   DETAILS,
   PRICING,
   PRICING_AND_STOCK,
@@ -52,7 +53,7 @@ import css from './EditListingWizard.module.css';
 // and listing publishing happens after last panel.
 const TABS_DETAILS_ONLY = [DETAILS];
 const TABS_PRODUCT = [DETAILS, PRICING_AND_STOCK, DELIVERY, PHOTOS];
-const TABS_BOOKING = [DETAILS, LOCATION, PRICING, AVAILABILITY, PHOTOS];
+const TABS_BOOKING = [CATEGORY, DETAILS, LOCATION, PRICING, AVAILABILITY, PHOTOS];
 const TABS_ALL = [...TABS_PRODUCT, ...TABS_BOOKING];
 
 // Tabs are horizontal in small screens
@@ -75,7 +76,10 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, processName) => {
 
   let labelKey = null;
   let submitButtonKey = null;
-  if (tab === DETAILS) {
+  if (tab === CATEGORY) {
+    labelKey = 'EditListingWizard.tabLabelCategory';
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDetails`;
+  } else if (tab === DETAILS) {
     labelKey = 'EditListingWizard.tabLabelDetails';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDetails`;
   } else if (tab === PRICING) {
@@ -178,10 +182,17 @@ const tabCompleted = (tab, listing, config) => {
   const deliveryOptionPicked = publicData && (shippingEnabled || pickupEnabled);
 
   switch (tab) {
-    case DETAILS:
+    case CATEGORY:
       return !!(
         description &&
         title &&
+        listingType &&
+        transactionProcessAlias &&
+        unitType &&
+        hasValidListingFieldsInExtendedData(publicData, privateData, config)
+      );
+    case DETAILS:
+      return !!(
         listingType &&
         transactionProcessAlias &&
         unitType &&

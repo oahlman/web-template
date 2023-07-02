@@ -13,6 +13,7 @@ import { propTypes } from '../../../util/types';
 
 // Import modules from this directory
 import EditListingAvailabilityPanel from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
+import EditListingCategoryPanel from './EditListingCategoryPanel/EditListingDetailsPanel';
 import EditListingDetailsPanel from './EditListingDetailsPanel/EditListingDetailsPanel';
 import EditListingDeliveryPanel from './EditListingDeliveryPanel/EditListingDeliveryPanel';
 import EditListingLocationPanel from './EditListingLocationPanel/EditListingLocationPanel';
@@ -22,6 +23,7 @@ import EditListingPricingAndStockPanel from './EditListingPricingAndStockPanel/E
 
 import css from './EditListingWizardTab.module.css';
 
+export const CATEGORY = 'category';
 export const DETAILS = 'details';
 export const PRICING = 'pricing';
 export const PRICING_AND_STOCK = 'pricing-and-stock';
@@ -32,6 +34,7 @@ export const PHOTOS = 'photos';
 
 // EditListingWizardTab component supports these tabs
 export const SUPPORTED_TABS = [
+  CATEGORY,
   DETAILS,
   PRICING,
   PRICING_AND_STOCK,
@@ -179,6 +182,15 @@ const EditListingWizardTab = props => {
 
   // TODO: add missing cases for supported tabs
   switch (tab) {
+    case CATEGORY: {
+      return (
+        <EditListingCategoryPanel
+          {...panelProps(CATEGORY)}
+          onProcessChange={onProcessChange}
+          config={config}
+        />
+      );
+    }
     case DETAILS: {
       return (
         <EditListingDetailsPanel
