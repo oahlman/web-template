@@ -31,11 +31,13 @@
 
 .title {
   composes: formMargins;
+  display: none;
 }
 
 .description {
   composes: formMargins;
   flex-shrink: 0;
+  display: none;
 }
 
 .listingTypeSelect {

@@ -153,12 +153,14 @@ const setNoAvailabilityForProductListings = processAlias => {
  */
 const getInitialValues = (props, existingListingType, listingTypes, listingFieldsConfig) => {
   const { description, title, publicData, privateData } = props?.listing?.attributes || {};
-  const { listingType } = publicData;
+  const { listingType, phoneNumber, email } = publicData;
 
   // Initial values for the form
   return {
     title,
     description,
+    phoneNumber,
+    email,
     // Transaction type info: listingType, transactionProcessAlias, unitType
     ...getTransactionInfo(listingTypes, existingListingType),
     ...pickListingFieldsData(publicData, 'public', listingType, listingFieldsConfig),
@@ -236,6 +238,8 @@ const EditListingDetailsPanel = props => {
             const {
               title,
               description,
+              phoneNumber,
+              email,
               listingType,
               transactionProcessAlias,
               unitType,
@@ -252,6 +256,8 @@ const EditListingDetailsPanel = props => {
                 listingType,
                 transactionProcessAlias,
                 unitType,
+                phoneNumber,
+                email,
                 ...pickListingFieldsData(
                   rest,
                   'public',
@@ -296,6 +302,8 @@ const EditListingDetailsPanel = props => {
               listingType,
               transactionProcessAlias,
               unitType,
+              phoneNumber,
+              email,
               ...rest
             } = values;
             // Clear custom fields that are not included for the selected process
@@ -309,6 +317,8 @@ const EditListingDetailsPanel = props => {
                 listingType,
                 transactionProcessAlias,
                 unitType,
+                phoneNumber,
+                email,
                 ...pickListingFieldsData(
                   rest,
                   'public',

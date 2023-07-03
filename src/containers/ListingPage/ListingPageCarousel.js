@@ -247,12 +247,12 @@ export const ListingPageComponent = props => {
   const productURL = `${config.marketplaceRootURL}${location.pathname}${location.search}${location.hash}`;
   const schemaPriceMaybe = price
     ? {
-        price: intl.formatNumber(convertMoneyToNumber(price), {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
-        priceCurrency: price.currency,
-      }
+      price: intl.formatNumber(convertMoneyToNumber(price), {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+      priceCurrency: price.currency,
+    }
     : {};
   const currentStock = currentListing.currentStock?.attributes?.quantity || 0;
   const schemaAvailability =
@@ -298,45 +298,51 @@ export const ListingPageComponent = props => {
                 }}
               />
             ) : null}
-            <SectionGallery
-              listing={currentListing}
-              variantPrefix={config.layout.listingImage.variantPrefix}
-            />
+            {currentListing.attributes?.publicData.category === 'accommodation' ? (
+              <SectionGallery
+                listing={currentListing}
+                variantPrefix={config.layout.listingImage.variantPrefix}
+              />
+            ) : null}
             <div className={css.mobileHeading}>
               <H4 as="h1" className={css.orderPanelTitle}>
                 <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
               </H4>
             </div>
             <SectionTextMaybe text={description} showAsIngress />
-            <SectionDetailsMaybe
-              publicData={publicData}
-              metadata={metadata}
-              listingConfig={listingConfig}
-              intl={intl}
-            />
-            {listingConfig.listingFields.reduce((pickedElements, config) => {
-              const { key, enumOptions, scope = 'public' } = config;
-              const value =
-                scope === 'public' ? publicData[key] : scope === 'metadata' ? metadata[key] : null;
-              const hasValue = value !== null;
-              return hasValue && config.schemaType === SCHEMA_TYPE_MULTI_ENUM
-                ? [
-                    ...pickedElements,
-                    <SectionMultiEnumMaybe
-                      key={key}
-                      heading={config?.showConfig?.label}
-                      options={createFilterOptions(enumOptions)}
-                      selectedOptions={value}
-                    />,
-                  ]
-                : hasValue && config.schemaType === SCHEMA_TYPE_TEXT
-                ? [
-                    ...pickedElements,
-                    <SectionTextMaybe key={key} heading={config?.showConfig?.label} text={value} />,
-                  ]
-                : pickedElements;
-            }, [])}
-
+            {currentListing.attributes?.publicData.category === 'accommodation'
+              ? (
+                <>
+                  <SectionDetailsMaybe
+                    publicData={publicData}
+                    metadata={metadata}
+                    listingConfig={listingConfig}
+                    intl={intl}
+                  />
+                  {listingConfig.listingFields.reduce((pickedElements, config) => {
+                    const { key, enumOptions, scope = 'public' } = config;
+                    const value = scope === 'public' ? publicData[key] : scope === 'metadata' ? metadata[key] : null;
+                    const hasValue = value !== null;
+                    return hasValue && config.schemaType === SCHEMA_TYPE_MULTI_ENUM
+                      ? [
+                        ...pickedElements,
+                        <SectionMultiEnumMaybe
+                          key={key}
+                          heading={config?.showConfig?.label}
+                          options={createFilterOptions(enumOptions)}
+                          selectedOptions={value}
+                        />,
+                      ]
+                      : hasValue && config.schemaType === SCHEMA_TYPE_TEXT
+                        ? [
+                          ...pickedElements,
+                          <SectionTextMaybe key={key} heading={config?.showConfig?.label} text={value} />,
+                        ]
+                        : pickedElements;
+                  }, [])}
+                </>
+              )
+              : null}
             <SectionMapMaybe
               geolocation={geolocation}
               publicData={publicData}
@@ -359,40 +365,41 @@ export const ListingPageComponent = props => {
             />
           </div>
           <div className={css.orderColumnForProductLayout}>
-            <OrderPanel
-              className={css.productOrderPanel}
-              listing={currentListing}
-              isOwnListing={isOwnListing}
-              onSubmit={handleOrderSubmit}
-              authorLink={
-                <NamedLink
-                  className={css.authorNameLink}
-                  name="ListingPage"
-                  params={params}
-                  to={{ hash: '#author' }}
-                >
-                  {authorDisplayName}
-                </NamedLink>
-              }
-              title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
-              titleDesktop={
-                <H4 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-                </H4>
-              }
-              author={ensuredAuthor}
-              onManageDisableScrolling={onManageDisableScrolling}
-              onContactUser={onContactUser}
-              monthlyTimeSlots={monthlyTimeSlots}
-              onFetchTimeSlots={onFetchTimeSlots}
-              onFetchTransactionLineItems={onFetchTransactionLineItems}
-              lineItems={lineItems}
-              fetchLineItemsInProgress={fetchLineItemsInProgress}
-              fetchLineItemsError={fetchLineItemsError}
-              marketplaceCurrency={config.currency}
-              dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
-              marketplaceName={config.marketplaceName}
-            />
+            {currentListing.attributes?.publicData.category === 'accommodation' ?
+              (<OrderPanel
+                className={css.productOrderPanel}
+                listing={currentListing}
+                isOwnListing={isOwnListing}
+                onSubmit={handleOrderSubmit}
+                authorLink={
+                  <NamedLink
+                    className={css.authorNameLink}
+                    name="ListingPage"
+                    params={params}
+                    to={{ hash: '#author' }}
+                  >
+                    {authorDisplayName}
+                  </NamedLink>
+                }
+                title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
+                titleDesktop={
+                  <H4 as="h1" className={css.orderPanelTitle}>
+                    <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
+                  </H4>
+                }
+                author={ensuredAuthor}
+                onManageDisableScrolling={onManageDisableScrolling}
+                onContactUser={onContactUser}
+                monthlyTimeSlots={monthlyTimeSlots}
+                onFetchTimeSlots={onFetchTimeSlots}
+                onFetchTransactionLineItems={onFetchTransactionLineItems}
+                lineItems={lineItems}
+                fetchLineItemsInProgress={fetchLineItemsInProgress}
+                fetchLineItemsError={fetchLineItemsError}
+                marketplaceCurrency={config.currency}
+                dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
+                marketplaceName={config.marketplaceName}
+              />) : `Contact details: ${currentListing.attributes.publicData.phoneNumber ? currentListing.attributes.publicData.phoneNumber : 'No phone number provided'} | ${currentListing.attributes.publicData.email ? currentListing.attributes.publicData.email : 'No email provided'}`}
           </div>
         </div>
       </LayoutSingleColumn>

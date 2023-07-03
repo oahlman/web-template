@@ -11,7 +11,7 @@ import { EXTENDED_DATA_SCHEMA_TYPES, propTypes } from '../../../../util/types';
 import { maxLength, required, composeValidators } from '../../../../util/validators';
 
 // Import shared components
-import { Form, Button, FieldSelect, FieldTextInput, Heading } from '../../../../components';
+import { Form, Button, FieldSelect, FieldTextInput, FieldPhoneNumberInput, Heading } from '../../../../components';
 // Import modules from this directory
 import CustomExtendedDataField from '../CustomExtendedDataField';
 import css from './EditListingDetailsForm.module.css';
@@ -127,16 +127,16 @@ const AddListingFields = props => {
 
     return isKnownSchemaType && isTargetProcessAlias && isProviderScope
       ? [
-          ...pickedFields,
-          <CustomExtendedDataField
-            key={key}
-            name={key}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-          />,
-        ]
+        ...pickedFields,
+        <CustomExtendedDataField
+          key={key}
+          name={key}
+          fieldConfig={fieldConfig}
+          defaultRequiredMessage={intl.formatMessage({
+            id: 'EditListingDetailsForm.defaultRequiredMessage',
+          })}
+        />,
+      ]
       : pickedFields;
   }, []);
 
@@ -201,6 +201,29 @@ const EditListingDetailsFormComponent = props => (
             onProcessChange={onProcessChange}
             formApi={formApi}
             intl={intl}
+          />
+
+          <FieldPhoneNumberInput
+            id={`${formId}.phoneNumber`}
+            name="phoneNumber"
+            className={css.description}
+            label="Phone number"
+            placeholder="Phone number"
+            validate={required(
+              intl.formatMessage({
+                id: 'EditListingDetailsForm.descriptionRequired',
+              })
+            )}
+          />
+
+          <FieldTextInput
+            type="email"
+            id={`${formId}.email`}
+            name="email"
+            className={css.description}
+            autoComplete="email"
+            label="Email"
+            placeholder="Email"
           />
 
           <FieldTextInput
