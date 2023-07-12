@@ -47,20 +47,8 @@ import EditListingWizardTab, {
 } from './EditListingWizardTab';
 import css from './EditListingWizard.module.css';
 
-// You can reorder these panels.
-// Note 1: You need to change save button translations for new listing flow
-// Note 2: Ensure that draft listing is created after the first panel
-// and listing publishing happens after last panel.
-const TABS_DETAILS_ONLY = [DETAILS];
-const TABS_PRODUCT = [DETAILS, PRICING_AND_STOCK, DELIVERY, PHOTOS];
-const TABS_BOOKING = [CATEGORY, DETAILS, LOCATION, PRICING, AVAILABILITY, PHOTOS];
-const TABS_ALL = [...TABS_PRODUCT, ...TABS_BOOKING];
-
-// Tabs are horizontal in small screens
-const MAX_HORIZONTAL_NAV_SCREEN_WIDTH = 1023;
-
-const STRIPE_ONBOARDING_RETURN_URL_SUCCESS = 'success';
-const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
+// const publicData = listing?.attributes?.publicData || {};
+let listing = null;
 
 /**
  * Return translations for wizard tab: label and submit button.
@@ -141,14 +129,14 @@ const hasValidListingFieldsInExtendedData = (publicData, privateData, config) =>
       return schemaType === SCHEMA_TYPE_ENUM
         ? typeof savedListingField === 'string' && hasValidEnumValue(savedListingField)
         : schemaType === SCHEMA_TYPE_MULTI_ENUM
-        ? Array.isArray(savedListingField) && hasValidMultiEnumValues(savedListingField)
-        : schemaType === SCHEMA_TYPE_TEXT
-        ? typeof savedListingField === 'string'
-        : schemaType === SCHEMA_TYPE_LONG
-        ? typeof savedListingField === 'number' && Number.isInteger(savedListingField)
-        : schemaType === SCHEMA_TYPE_BOOLEAN
-        ? savedListingField === true || savedListingField === false
-        : false;
+          ? Array.isArray(savedListingField) && hasValidMultiEnumValues(savedListingField)
+          : schemaType === SCHEMA_TYPE_TEXT
+            ? typeof savedListingField === 'string'
+            : schemaType === SCHEMA_TYPE_LONG
+              ? typeof savedListingField === 'number' && Number.isInteger(savedListingField)
+              : schemaType === SCHEMA_TYPE_BOOLEAN
+                ? savedListingField === true || savedListingField === false
+                : false;
     }
     return true;
   };
@@ -180,7 +168,6 @@ const tabCompleted = (tab, listing, config) => {
   const { listingType, transactionProcessAlias, unitType, shippingEnabled, pickupEnabled } =
     publicData || {};
   const deliveryOptionPicked = publicData && (shippingEnabled || pickupEnabled);
-  const category = publicData?.category;
 
   switch (tab) {
     case CATEGORY:
@@ -190,6 +177,7 @@ const tabCompleted = (tab, listing, config) => {
         listingType &&
         transactionProcessAlias &&
         unitType &&
+        publicData?.category &&
         hasValidListingFieldsInExtendedData(publicData, privateData, config)
       );
     case DETAILS:
@@ -197,10 +185,12 @@ const tabCompleted = (tab, listing, config) => {
         listingType &&
         transactionProcessAlias &&
         unitType &&
+        // If the category is 'accommodation', require guestsNumber. Otherwise, it's not required.
+        (publicData?.category === 'accommodation' ? publicData?.guestsNumber : true) &&
         hasValidListingFieldsInExtendedData(publicData, privateData, config)
       );
     case PRICING:
-      return price || publicData;
+      return !!price;
     case PRICING_AND_STOCK:
       return !!price;
     case DELIVERY:
@@ -208,13 +198,29 @@ const tabCompleted = (tab, listing, config) => {
     case LOCATION:
       return !!(geolocation && publicData?.location?.address);
     case AVAILABILITY:
-      return availabilityPlan || publicData;
+      return !!availabilityPlan;
     case PHOTOS:
       return images && images.length > 0;
     default:
       return false;
   }
 };
+
+// You can reorder these panels.
+// Note 1: You need to change save button translations for new listing flow
+// Note 2: Ensure that draft listing is created after the first panel
+// and listing publishing happens after last panel.
+const TABS_DETAILS_ONLY = [DETAILS];
+const TABS_PRODUCT = [DETAILS, PRICING_AND_STOCK, DELIVERY, PHOTOS];
+const TABS_SERVICE = [CATEGORY, DETAILS, LOCATION, PHOTOS];
+const TABS_BOOKING = [CATEGORY, DETAILS, LOCATION, PRICING, AVAILABILITY, PHOTOS];
+const TABS_ALL = [...TABS_PRODUCT, ...TABS_BOOKING];
+
+// Tabs are horizontal in small screens
+const MAX_HORIZONTAL_NAV_SCREEN_WIDTH = 1023;
+
+const STRIPE_ONBOARDING_RETURN_URL_SUCCESS = 'success';
+const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
 
 /**
  * Check which wizard tabs are active and which are not yet available. Tab is active if previous
@@ -395,20 +401,22 @@ class EditListingWizard extends Component {
     const invalidExistingListingType =
       existingListingType &&
       !validListingTypes.find(config => config.listingType === existingListingType);
+    const bookingListing = currentListing.attributes?.publicData?.category === 'accommodation';
+    const TABS_MEDLA = bookingListing ? TABS_BOOKING : TABS_SERVICE;
 
     const processName = transactionProcessAlias
       ? transactionProcessAlias.split('/')[0]
       : validListingTypes.length === 1
-      ? validListingTypes[0].transactionType.process
-      : BOOKING_PROCESS_NAME;
+        ? validListingTypes[0].transactionType.process
+        : BOOKING_PROCESS_NAME;
 
     // For oudated draft listing, we don't show other tabs but the "details"
     const tabs =
       invalidExistingListingType && isNewListingFlow
         ? TABS_DETAILS_ONLY
         : isBookingProcess(processName)
-        ? TABS_BOOKING
-        : TABS_PRODUCT;
+          ? TABS_MEDLA
+          : TABS_PRODUCT;
 
     // Check if wizard tab is active / linkable.
     // When creating a new listing, we don't allow users to access next tab until the current one is completed.
